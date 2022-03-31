@@ -1,1 +1,1 @@
-script for home directory from current directory
+long format
