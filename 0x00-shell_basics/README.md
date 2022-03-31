@@ -1,1 +1,1 @@
-Various functions
+Magicfile
