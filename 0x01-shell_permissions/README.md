@@ -1,1 +1,1 @@
-script permission
+Directory permissions
