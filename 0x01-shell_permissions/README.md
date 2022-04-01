@@ -1,2 +1,3 @@
 Switch user
 Print username
+list of groups
