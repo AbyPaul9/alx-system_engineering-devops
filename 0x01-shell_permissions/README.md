@@ -1,1 +1,2 @@
 Permission
+Multiple permissions
