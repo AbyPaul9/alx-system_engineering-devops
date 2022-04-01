@@ -1,1 +1,1 @@
-Everyones access
+Varying permissions
