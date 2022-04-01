@@ -1,1 +1,1 @@
-Varying permissions
+John Doe
