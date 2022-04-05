@@ -1,2 +1,1 @@
-Alias
-Hello user
+Add to path
