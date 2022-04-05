@@ -1,2 +1,1 @@
-Local variable
-Global variable
+Addition
