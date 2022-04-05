@@ -1,1 +1,1 @@
-Add to path
+global variables
