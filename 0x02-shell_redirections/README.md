@@ -1,1 +1,1 @@
-Letters only
+Replace word
