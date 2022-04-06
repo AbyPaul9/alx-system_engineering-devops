@@ -1,1 +1,1 @@
-Delete .js
+Count dir and subdir
