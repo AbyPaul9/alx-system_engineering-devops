@@ -1,1 +1,1 @@
-Pattern
+Number of lines
