@@ -1,1 +1,1 @@
-Number of lines
+Hide word
