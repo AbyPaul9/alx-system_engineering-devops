@@ -1,9 +1,5 @@
 # installing puppet link
-include python
-include python::flask
-
-package { 'flask':
+package { 'puppet-lint':
     ensure   => '2.1.0',
-    provider => 'pip',
-    require  => Class['python::flask'],
+    provider => 'gem',
 }
