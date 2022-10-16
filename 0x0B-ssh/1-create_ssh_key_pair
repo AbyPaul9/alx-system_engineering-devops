@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Creating new public Key with name holberton parahrase "Betty" 4096 bits
+ssh-keygen -b 4096 -f school -N betty
