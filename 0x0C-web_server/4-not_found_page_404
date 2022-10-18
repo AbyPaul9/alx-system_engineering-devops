@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Configures a brand new Ubuntu machine to the redirection requirements
+apt-get update
+apt-get -y install nginx
+echo "Hello World!" > /var/www/html/index.html
+
+CONFIGURED=$(grep -c "error_page 404 /404-error.html;" /etc/nginx/sites-enabled/default)
+
+if [ "$CONFIGURED" = 0 ]; then
+    sed -i '/listen \[::\]:80 default_server;/a \\n\terror_page 404 /404-error.html;' /etc/nginx/sites-enabled/default
+    echo "Ceci n'est pas une page" > /var/www/html/404-error.html
+fi
+
+CONFIGURED=$(grep -c "rewrite ^/redirect_me / permanent;" /etc/nginx/sites-enabled/default)
+
+if [ "$CONFIGURED" = 0 ]; then
+    sed -i '/listen \[::\]:80 default_server;/a \\n\trewrite ^/redirect_me / permanent;' /etc/nginx/sites-enabled/default
+fi
+
+service nginx restart
