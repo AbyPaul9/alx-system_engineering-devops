@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
-# Configures a brand new Ubuntu machine to the redirection requirements
-apt-get update
-apt-get -y install nginx
+# Installing Nginx on Server and redirect
+sudo apt-get update -y && sudo apt-get upgrade -y
+sudo apt-get install -y nginx
+sudo chown -R "$USER":"$USER" /var/www/
+sudo chown -R "$USER":"$USER" /etc/nginx
 echo "Hello World!" > /var/www/html/index.nginx-debian.html
-
-CONFIGURED=$(grep -c "rewrite ^/redirect_me / permanent;" /etc/nginx/sites-enabled/default)
-
-if [ "$CONFIGURED" = 0 ]; then
-    sed -i '/listen \[::\]:80 default_server;/a \\n\trewrite ^/redirect_me / permanent;' /etc/nginx/sites-enabled/default
-fi
-
-service nginx restart
+line="\\\trewrite ^/redirect_me https://www.youtube.com/watch?v=dQw4w9WgXcQ permanent;"
+sudo sed -i "26i $line" /etc/nginx/sites-available/default
+sudo service nginx restart
+sudo service nginx reload
