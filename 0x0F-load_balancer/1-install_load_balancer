@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Install and configure HAproxy
+apt-get update
+apt-get install -y haproxy
+
+CONFIGURED=$(grep -c "^frontend http_front$" /etc/haproxy/haproxy.cfg)
+
+if [ "$CONFIGURED" = 0 ]; then
+    echo -e "\nfrontend http_front" >> /etc/haproxy/haproxy.cfg
+    sed -i "/frontend http_front/a \\\tdefault_backend http_back" /etc/haproxy/haproxy.cfg
+    sed -i "/frontend http_front/a \\\tbind *:80" /etc/haproxy/haproxy.cfg
+fi
+
+CONFIGURED=$(grep -c "^backend http_back$" /etc/haproxy/haproxy.cfg)
+
+if [ "$CONFIGURED" = 0 ]; then
+    echo -e "\nbackend http_back" >> /etc/haproxy/haproxy.cfg
+    sed -i "/^backend http_back$/a \\\tserver 2701-web-02 34.74.249.41:80 check" /etc/haproxy/haproxy.cfg
+    sed -i "/^backend http_back$/a \\\tserver 2701-web-01 34.138.56.48:80 check" /etc/haproxy/haproxy.cfg
+    sed -i "/^backend http_back$/a \\\tbalance roundrobin" /etc/haproxy/haproxy.cfg
+fi
+
+service haproxy restart
