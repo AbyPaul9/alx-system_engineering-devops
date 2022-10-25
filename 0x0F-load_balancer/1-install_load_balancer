@@ -1,23 +1,21 @@
 #!/usr/bin/env bash
-# Install and configure HAproxy
-apt-get update
-apt-get install -y haproxy
+# shellcheck disable=SC2016
+# installing and config load balancer
+apt-get -y install software-properties-common
+add-apt-repository -y ppa:vbernat/haproxy-2.0
+apt-get -y update
+apt-get -y install haproxy=2.0.\*
 
-CONFIGURED=$(grep -c "^frontend http_front$" /etc/haproxy/haproxy.cfg)
+echo "ENABLED=1" >> /etc/default/haproxy
 
-if [ "$CONFIGURED" = 0 ]; then
-    echo -e "\nfrontend http_front" >> /etc/haproxy/haproxy.cfg
-    sed -i "/frontend http_front/a \\\tdefault_backend http_back" /etc/haproxy/haproxy.cfg
-    sed -i "/frontend http_front/a \\\tbind *:80" /etc/haproxy/haproxy.cfg
-fi
-
-CONFIGURED=$(grep -c "^backend http_back$" /etc/haproxy/haproxy.cfg)
-
-if [ "$CONFIGURED" = 0 ]; then
-    echo -e "\nbackend http_back" >> /etc/haproxy/haproxy.cfg
-    sed -i "/^backend http_back$/a \\\tserver 45214-web-02 54.236.8.116:80 check" /etc/haproxy/haproxy.cfg
-    sed -i "/^backend http_back$/a \\\tserver 45214-web-01 3.237.19.192:80 check" /etc/haproxy/haproxy.cfg
-    sed -i "/^backend http_back$/a \\\tbalance roundrobin" /etc/haproxy/haproxy.cfg
-fi
-
+echo "
+frontend load_balancer
+    bind *:80
+    mode http
+    default_backend webserver
+backend webserver
+    balance roundrobin
+    server 45214-web-01 3.237.19.192:80 check
+    server 45214-web-02 54.236.8.116:80 check
+" >> /etc/haproxy/haproxy.cfg
 service haproxy restart
