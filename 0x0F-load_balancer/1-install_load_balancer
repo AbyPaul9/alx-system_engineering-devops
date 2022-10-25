@@ -15,8 +15,8 @@ CONFIGURED=$(grep -c "^backend http_back$" /etc/haproxy/haproxy.cfg)
 
 if [ "$CONFIGURED" = 0 ]; then
     echo -e "\nbackend http_back" >> /etc/haproxy/haproxy.cfg
-    sed -i "/^backend http_back$/a \\\tserver 2701-web-02 34.74.249.41:80 check" /etc/haproxy/haproxy.cfg
-    sed -i "/^backend http_back$/a \\\tserver 2701-web-01 34.138.56.48:80 check" /etc/haproxy/haproxy.cfg
+    sed -i "/^backend http_back$/a \\\tserver 45214-web-02 54.236.8.116:80 check" /etc/haproxy/haproxy.cfg
+    sed -i "/^backend http_back$/a \\\tserver 45214-web-01 3.237.19.192:80 check" /etc/haproxy/haproxy.cfg
     sed -i "/^backend http_back$/a \\\tbalance roundrobin" /etc/haproxy/haproxy.cfg
 fi
 
