@@ -1,7 +1,71 @@
 #!/usr/bin/env bash
-# Install and configure a load balancer
-sudo apt-get update -y
-sudo apt-get install haproxy -y
+# installing the haproxy load balancer 2.6.\*
 
-echo -e "\nfrontend Server\n\tbind *:80\n\tmode http\n\tdefault_backend nodes\n\nbackend nodes\n\tbalance roundrobin\n\tserver 45214-web-01 3.237.19.192:80 check\n\tserver 45214-web-02 54.236.8.116:80 check" | sudo tee -a /etc/haproxy/haproxy.cfg
-sudo service haproxy restart
+# shell-colors
+blue='\e[1;34m'
+brown='\e[0;33m'
+green='\e[1;32m'
+reset='\033[0m'
+
+
+# installing updates and upgrades 1st
+sudo apt-get -y update -qq
+
+# adding a PPA repo
+sudo add-apt-repository ppa:vbernat/haproxy-2.6 -y
+
+function install()
+{
+        command -v "$1" &> /dev/null
+    
+	# shellcheck disable=SC2181
+	if [ $? -ne 0 ];
+	then
+		echo -e "  Installing: ${brown}$1${reset}\n"
+		sudo apt-get install "$1" -y -qq
+
+		echo -e "\n"
+	else
+		echo -e "${green}${1} is already installed.${reset}\n"
+	fi
+}
+
+install haproxy=2.6.\* #install haproxy
+
+# backing up the default haproxy.cfg file to haproxy_default.backup
+sudo cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy_default.backup 
+
+# our haproxy.cfg file configurations
+server_config=\
+"
+defaults
+	mode http
+	timeout client 30s
+	timeout connect 10s
+	timeout server 30s
+	timeout http-request 10s
+	maxconn 3000
+frontend myairbnb.tech
+	bind *:80
+	default_backend web_servers-backend
+backend web_servers-backend
+	balance roundrobin
+	server 45214-web-01 3.237.19.192:80 check
+	server 45214-web-02 54.236.8.116:80 check
+"
+
+echo -e "\n${blue}Writing to the haproxy file...${reset}\n"
+# writing to the haproxy.cfg file
+# shellcheck disable=SC2154
+echo "$server_config" | sudo dd status=none of=/etc/haproxy/haproxy.cfg
+
+echo -e "\n${blue}Enable haproxy to start from init file${reset}\n"
+# enable haproxy to be started by the init script
+echo "ENABLED=1" | sudo dd status=none of=/etc/default/haproxy
+
+if [ "$(pgrep -c haproxy)" -le 0 ];
+then
+	sudo service haproxy start
+else
+	sudo service haproxy restart
+fi
