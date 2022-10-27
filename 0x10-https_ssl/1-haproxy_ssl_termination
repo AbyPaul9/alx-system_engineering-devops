@@ -37,7 +37,7 @@ frontend www-http
     mode http
     default_backend webserver
 frontend www-https
-        bind *:443 ssl crt /etc/haproxy/certs/www.ahmed-dev.tech.pem
+        bind *:443 ssl crt /etc/haproxy/certs/www.abypaul9.tech.pem
         default_backend webserver
 backend webserver
     balance roundrobin
